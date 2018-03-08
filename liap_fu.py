@@ -11,6 +11,7 @@ class Cl_InitPygame:
     def Size(width,height):
         return pygame.display.set_mode((width, height))
     def MainSurface():
+        print('ok')
         return pygame.display.get_surface()
     def Flip():
         pygame.display.flip()      
@@ -21,35 +22,25 @@ class Cl_InitPygame:
     
    
 
-class LiapF:
-      
+class LiapF():
+     wordlength = 5
+     colorH = 0.1
      pxarray = pygame.pixelarray
      string = 'AB'
      rangexy = 400
      scale = 100
-     count = 100
+     count = 10
      method = 1
      pxarray = pygame.PixelArray
      k  = 1
-     pos = (0,0)
-     
-          
-     
-     
-     def Status(x):            
-         proc = x/(LiapF.rangexy/100)
-         if modf(proc)[0] == 0:
-            print ('-'*int(proc)+str(int(proc))+'%')         
-         Cl_InitPygame.Flip()
-            
-     def Exchange_par (a,b):
-         return b,a
+     pos = [0,0]
 
      def PointInfo(window):
          this_pos = pygame.mouse.get_pos()
          print(str(this_pos)+"-->"+str(LiapF.pos_to_liap(this_pos[0],this_pos[1])))
          LiapF.scale = LiapF.scale * 2
-         LiapF.pos = (this_pos)
+         LiapF.pos[0] = this_pos[0]
+         LiapF.pos[1] = this_pos[1]
          LiapF.f_space(window)
          LiapF.pxarray = None
          LiapF.ImgSave(window,"untitled1_"+str(LiapF.rangexy)+'_'+str(LiapF.count)+'_'+LiapF.string+".png")
@@ -71,6 +62,7 @@ class LiapF:
         
         a = (a+LiapF.pos[0])/LiapF.scale
         b = (LiapF.rangexy-(b-LiapF.pos[1]))/LiapF.scale
+       
         return a,b
 
 
@@ -84,10 +76,12 @@ class LiapF:
             return p[0]
         elif case=='B':            
             return p[1]
+       
         
 
      def Exponent(xx,yy,N):
          p = (xx,yy)
+        
          npNlog = np.frompyfunc(LiapF.Nlog,1,1)
          x = 0.5
          E = 0
@@ -114,45 +108,93 @@ class LiapF:
          LiapF.planearray(window) 
          x = np.arange(0,(LiapF.rangexy))
          y = np.arange(0,(LiapF.rangexy))
-         xx, yy = np.meshgrid(x, y, sparse=True)
-         
-         
-         
-         
-         pxx, pyy = LiapF.pos_to_liap(xx,yy)
-         
         
+         xx, yy = np.meshgrid(x, y,sparse=True)         
+         pxx, pyy = LiapF.pos_to_liap(xx,yy)        
          npExp = np.frompyfunc(LiapF.Exponent,3,1)         
          e = npExp(pxx,pyy,LiapF.count)
          e = np.array([list(arr) for arr in e])
          #e = np.flipud(np.fliplr(np.rot90(e))) 
-         npColoring = np.frompyfunc(LiapF.f_coloring1,3,0)
+         npColoring = np.frompyfunc(LiapF.f_coloring4,3,0)
          npColoring(e,xx,yy)
          LiapF.pxarray=ndimage.gaussian_filter(LiapF.pxarray, sigma=0.5)
-         #LiapF.f_coloring1(e,xx,yy)
-         #for x in range(LiapF.rangexy):
-             #LiapF.Status(x)
-             #for y in range(LiapF.rangexy):
-                 #p = LiapF.pos_to_liap(x,y)
-                 #e = LiapF.Exponent(p,LiapF.count)
-                # LiapF.f_coloring1(e,x,y)
-                 
+         
 
      def f_coloring1(e,x,y):
-            if e>=0:
+            if e<=0:
                 #e = e%1 
                 e = abs(round(e) - e)
-                colors = colorsys.hls_to_rgb(0,e,0)                     
-                LiapF.pxarray[x][y]=(colors[0]*255,colors[1]*255,colors[2]*255)
-            else:    
+                colors = colorsys.hls_to_rgb(LiapF.colorH,e,1)                     
+                LiapF.pxarray[x][y]=(colors[0]*255,colors[1]*255,colors[2]*255)               
+            elif e>0:    
                 try:
                     #e = e%1 
                     e = abs(round(e) - e)
-                    #e = abs(math.ceil(e) - e)
-                    colors = colorsys.hls_to_rgb(0,e,1)                     
+                    #
+                    colors = colorsys.hls_to_rgb(0,e,0)                     
                     LiapF.pxarray[x][y]=(colors[0]*255,colors[1]*255,colors[2]*255)
                 except:
-                    LiapF.pxarray[x][y]=(100,255,255)     
+                    LiapF.pxarray[x][y]=(100,255,255)
+     
+     def f_coloring2(e,x,y):
+            
+            if e<=0:
+                e = e%1 
+                
+                colors = colorsys.hls_to_rgb(LiapF.colorH,e,1)                     
+                LiapF.pxarray[x][y]=(colors[0]*255,colors[1]*255,colors[2]*255)
+            
+                
+            elif e>0:    
+                try:
+                   
+                    e = e%1
+                    colors = colorsys.hls_to_rgb(0,e,0)                     
+                    LiapF.pxarray[x][y]=(colors[0]*255,colors[1]*255,colors[2]*255)
+                except:
+                    LiapF.pxarray[x][y]=(100,255,255)
+                    
+     def f_coloring3(e,x,y):
+            
+            if e<=0:
+                
+                e = abs(math.ceil(e) - e)
+                colors = colorsys.hls_to_rgb(LiapF.colorH,e,1)                     
+                LiapF.pxarray[x][y]=(colors[0]*255,colors[1]*255,colors[2]*255)
+            
+                
+            elif e>0:    
+                try:
+                   
+                    e = abs(math.ceil(e) - e)
+                    colors = colorsys.hls_to_rgb(0,e,0)                     
+                    LiapF.pxarray[x][y]=(colors[0]*255,colors[1]*255,colors[2]*255)
+                except:
+                    LiapF.pxarray[x][y]=(100,255,255)
+                    
+                    
+     def f_coloring4(e,x,y):
+            
+            if e<0:
+                 try:
+                    e = abs(np.log(abs(e)))/10
+                    
+                    colors = colorsys.hls_to_rgb(LiapF.colorH,e,1)                     
+                    LiapF.pxarray[x][y]=(colors[0]*255,colors[1]*255,colors[2]*255)
+                 except:
+                    LiapF.pxarray[x][y]=(0,0,0)
+            
+                
+            elif e>0:    
+                try:
+                    e = abs(np.log(e))/10
+                    
+                    colors = colorsys.hls_to_rgb(0,e,0)                     
+                    LiapF.pxarray[x][y]=(colors[0]*255,colors[1]*255,colors[2]*255)
+                except:
+                    LiapF.pxarray[x][y]=(0,0,0)
+            elif e==0:
+                LiapF.pxarray[x][y]=(0,0,0)
                     
                     
                      
