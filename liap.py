@@ -22,6 +22,7 @@ from liap_fu import Cl_InitPygame
 import pygame
 import random
 
+        
 
 def generate():
     
@@ -100,23 +101,34 @@ while True:
                LiapF.scale *= 2
                generate()
            elif keys[pygame.K_RIGHT]:         
-               LiapF.pos[0] -= 10            
+               LiapF.pos[0] -= 100            
                generate()
            elif keys[pygame.K_LEFT]:                 
                print('new')
-               LiapF.pos[0] += 10                 
+               LiapF.pos[0] += 100                 
                generate()
            elif keys[pygame.K_UP]:                
                print('new')
-               LiapF.pos[1] -= 10       
+               LiapF.pos[1] -= 100       
                generate()               
            elif keys[pygame.K_DOWN]:               
-               LiapF.pos[1] += 10                
+               LiapF.pos[1] += 100                
                print('new')             
                generate()
            elif keys[pygame.K_z]:               
                LiapF.scale *= 2                
                print('new')             
+               generate()
+           elif keys[pygame.K_m]:               
+               
+               
+               LiapF.method = (LiapF.method+1)%len(methods)
+               print(LiapF.method)
+               generate()
+           elif keys[pygame.K_n]:               
+               
+               LiapF.method = (LiapF.method-1)%len(methods)
+               
                generate()
             
            
