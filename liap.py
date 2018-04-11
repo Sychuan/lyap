@@ -119,16 +119,13 @@ while True:
                LiapF.scale *= 2                
                print('new')             
                generate()
-           elif keys[pygame.K_m]:               
-               
+           elif keys[pygame.K_m]:
                
                LiapF.method = (LiapF.method+1)%len(methods)
                print(LiapF.method)
                generate()
-           elif keys[pygame.K_n]:               
-               
+           elif keys[pygame.K_n]:
                LiapF.method = (LiapF.method-1)%len(methods)
-               
                generate()
             
            
