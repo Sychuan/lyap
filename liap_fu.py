@@ -7,6 +7,7 @@ from scipy import ndimage
 from numba import jit
 from timeit import default_timer as timer
 
+
 class Cl_InitPygame:
     def Init():
         pygame.init()
@@ -34,17 +35,17 @@ class LiapF():
     rangexy = 400
     scale = 100
     count = 10
-    method = 1
+    method = 0
     pxarray = pygame.PixelArray
     k = 1
     pos = [0, 0]
 
     def PointInfo(window):
         this_pos = pygame.mouse.get_pos()
-        print(str(this_pos) + "-->" + str(LiapF.pos_to_liap(this_pos[0], this_pos[1])))
+        # print(str(this_pos) + "-->" + str(LiapF.pos_to_liap(this_pos[0], this_pos[1])))
         LiapF.scale = LiapF.scale * 2
-        LiapF.pos[0] = this_pos[0]
-        LiapF.pos[1] = this_pos[1]
+        LiapF.pos[0] = this_pos[0] / LiapF.scale
+        LiapF.pos[1] = this_pos[1] / LiapF.scale
         LiapF.f_space(window)
         LiapF.pxarray = None
         LiapF.ImgSave(window, "untitled1_" + str(LiapF.rangexy) + '_' + str(LiapF.count) + '_' + LiapF.string + ".png")
@@ -57,10 +58,8 @@ class LiapF():
         LiapF.pxarray = pygame.PixelArray(window)
 
     def pos_to_liap(a, b):
-
-        a = (a + LiapF.pos[0]) / LiapF.scale
-        b = (LiapF.rangexy - (b - LiapF.pos[1])) / LiapF.scale
-
+        a = (a / LiapF.scale - LiapF.pos[0])
+        b = (b / LiapF.scale - LiapF.pos[1])
         return a, b
 
     def r_n(p, n):
@@ -77,20 +76,12 @@ class LiapF():
         E = 0
         for i in range(1, N):
             xp = (LiapF.r_n(p, i)) * x * (1 - x)
-            E += LiapF.Nlog(abs((LiapF.r_n(p,i))*(1-2*x)))
+            E += LiapF.Nlog(abs((LiapF.r_n(p, i)) * (1 - 2 * x)))
             x = xp
         return E / N
 
     def Nlog(x):
-        '''if x == 0:
-            return 0
-        else:
 
-            try:
-                res = log(x)  # 1/math.exp(x)
-            except:
-                res = 0
-            return res'''
         try:
             res = log(x)
         except:
@@ -98,9 +89,10 @@ class LiapF():
         return res
 
     def f_space(window):
+
         LiapF.planearray(window)
-        x = np.arange(0, LiapF.rangexy)
-        y = np.arange(0, LiapF.rangexy)
+        x = np.arange(0, LiapF.rangexy[0])
+        y = np.arange(0, LiapF.rangexy[1])
         xx, yy = np.meshgrid(x, y, sparse=True)
         pxx, pyy = LiapF.pos_to_liap(xx, yy)
         npExp = np.frompyfunc(LiapF.Exponent, 3, 1)
@@ -108,8 +100,14 @@ class LiapF():
         e = npExp(pxx, pyy, LiapF.count)
         e = np.array([list(arr) for arr in e])
         # e = np.flipud(np.fliplr(np.rot90(e)))
-
-        npColoring = np.frompyfunc(LiapF.f_coloring4, 3, 0)
+        methods = {
+            0: LiapF.f_coloring1,
+            1: LiapF.f_coloring2,
+            2: LiapF.f_coloring3,
+            3: LiapF.f_coloring4,
+            4: LiapF.f_coloring5,
+        }
+        npColoring = np.frompyfunc(methods[LiapF.method], 3, 0)
         npColoring(e, xx, yy)
         LiapF.pxarray = ndimage.gaussian_filter(LiapF.pxarray, sigma=0.5)
         end_time = timer()
@@ -123,7 +121,7 @@ class LiapF():
             LiapF.pxarray[x][y] = (colors[0] * 255, colors[1] * 255, colors[2] * 255)
         elif e > 0:
             try:
-                # e = e%1
+
                 e = abs(round(e) - e)
                 #
                 colors = colorsys.hls_to_rgb(0, e, 0)
@@ -178,5 +176,15 @@ class LiapF():
                 LiapF.pxarray[x][y] = (colors[0] * 255, colors[1] * 255, colors[2] * 255)
             except:
                 LiapF.pxarray[x][y] = (0, 0, 0)
+        elif e == 0:
+            LiapF.pxarray[x][y] = (0, 0, 0)
+
+    def f_coloring5(e, x, y):
+
+        if e < 0:
+            LiapF.pxarray[x][y] = (100, 100, 100)
+
+        elif e > 0:
+            LiapF.pxarray[x][y] = (255, 255, 100)
         elif e == 0:
             LiapF.pxarray[x][y] = (0, 0, 0)
