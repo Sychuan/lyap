@@ -40,6 +40,7 @@ class LiapF():
     k = 1
     pos = [0, 0]
 
+    #not working properly
     def PointInfo(window):
         this_pos = pygame.mouse.get_pos()
         # print(str(this_pos) + "-->" + str(LiapF.pos_to_liap(this_pos[0], this_pos[1])))
@@ -106,6 +107,7 @@ class LiapF():
             2: LiapF.f_coloring3,
             3: LiapF.f_coloring4,
             4: LiapF.f_coloring5,
+            5: LiapF.f_coloring6,
         }
         npColoring = np.frompyfunc(methods[LiapF.method], 3, 0)
         npColoring(e, xx, yy)
@@ -121,22 +123,17 @@ class LiapF():
             LiapF.pxarray[x][y] = (colors[0] * 255, colors[1] * 255, colors[2] * 255)
         elif e > 0:
             try:
-
                 e = abs(round(e) - e)
-                #
-                colors = colorsys.hls_to_rgb(0, e, 0)
+                colors = colorsys.hls_to_rgb(0, e, 1)
                 LiapF.pxarray[x][y] = (colors[0] * 255, colors[1] * 255, colors[2] * 255)
             except:
                 LiapF.pxarray[x][y] = (100, 255, 255)
 
     def f_coloring2(e, x, y):
-
         if e <= 0:
             e = e % 1
             colors = colorsys.hls_to_rgb(LiapF.colorH, e, 1)
             LiapF.pxarray[x][y] = (colors[0] * 255, colors[1] * 255, colors[2] * 255)
-
-
         elif e > 0:
             try:
                 e = e % 1
@@ -180,11 +177,22 @@ class LiapF():
             LiapF.pxarray[x][y] = (0, 0, 0)
 
     def f_coloring5(e, x, y):
-
         if e < 0:
-            LiapF.pxarray[x][y] = (100, 100, 100)
-
+            LiapF.pxarray[x][y] = (100, 100, 255)
         elif e > 0:
             LiapF.pxarray[x][y] = (255, 255, 100)
         elif e == 0:
             LiapF.pxarray[x][y] = (0, 0, 0)
+
+    def f_coloring6(e, x, y):
+        if e <= 0:
+            e = abs(round(e) - e)
+            colors = colorsys.hls_to_rgb(e, (abs(e)), 1)
+            LiapF.pxarray[x][y] = (colors[0] * 255, colors[1] * 255, colors[2] * 255)
+        elif e > 0:
+            try:
+                e = abs(round(e) - e)
+                colors = colorsys.hls_to_rgb(e, (abs(e)), 1)
+                LiapF.pxarray[x][y] = (colors[0] * 255, colors[1] * 255, colors[2] * 255)
+            except:
+                LiapF.pxarray[x][y] = (100, 255, 255)

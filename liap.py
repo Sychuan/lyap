@@ -21,7 +21,6 @@ from liap_fu import Cl_InitPygame
 import pygame
 import random
 
-
 def generate():
     Cl_InitPygame.Size(LiapF.rangexy[0], LiapF.rangexy[1])
     window = Cl_InitPygame.MainSurface()
@@ -36,13 +35,13 @@ def generate():
 # Cl_InitPygame.finish()
 def randomword(length):
     letters = 'AB'
-    return ''.join(random.choice(letters) for i in range(length))
+    return ''.join(random.choice(letters) for _ in range(length))
 
 
 try:
     LiapF.rangexy = int(input('window_size='))
 except:
-    LiapF.rangexy = [50, 50]
+    LiapF.rangexy = [100, 100]
 try:
     LiapF.scale = int(input('scale='))
 except:
@@ -56,18 +55,14 @@ try:
     if LiapF.string == '':
         LiapF.string = randomword(LiapF.wordlength)
         print(LiapF.string)
-
 except:
     LiapF.string = 'AB'
 
-LiapF.method = 1
+LiapF.method = 0
 LiapF.pos = [0, 0]
-
 Cl_InitPygame.Init()
 Cl_InitPygame.Size(LiapF.rangexy[0], LiapF.rangexy[1])
 window = Cl_InitPygame.MainSurface()
-
-print(window)
 
 generate()
 
@@ -91,7 +86,7 @@ while True:
             if keys[pygame.K_KP_ENTER]:
                 print('new')
                 LiapF.string = randomword(LiapF.wordlength)
-
+                print(LiapF.string)
                 generate()
             if keys[pygame.K_1]:
                 print('new')
@@ -135,10 +130,9 @@ while True:
                 print('new')
                 generate()
             elif keys[pygame.K_m]:
-
-                LiapF.method = (LiapF.method + 1) % 5
+                LiapF.method = (LiapF.method + 1) % 6
                 print(LiapF.method)
                 generate()
             elif keys[pygame.K_n]:
-                LiapF.method = (LiapF.method - 1) % 5
+                LiapF.method = (LiapF.method - 1) % 6
                 generate()
